@@ -1,0 +1,39 @@
+For evolution, creatures need:
+1. Self-replication
+2. Blueprint (genome)
+3. Inherit blueprint
+4. Mutation (1 bit per 1000 genes)
+5. Selection
+
+
+
+class Agent:
+	Coord loc;
+	Genome genome;
+	NeuralNet brain;
+
+
+
+Neurons ->
+	Input ->
+		My money
+		Opponents' money
+		Artifacts won (total)
+		My artifacts
+		Opponents' artifacts
+		The current turn #
+		In a bidding war [True/False]
+	Middle layer ->
+		Weight
+		Bias
+	Output -> (every player will always have these)
+		Bid $[2-10]
+		
+Fitness measured by ->
+	Score (Artifacts added up plus money)
+	Difference in score between players
+	
+Reproduction ->
+	Asexual -> just apply mutation
+	Sexual -> match up players based on fitness, apply mutation
+	
