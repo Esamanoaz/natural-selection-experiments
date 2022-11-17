@@ -18,4 +18,4 @@ if __name__ == '__main__':
         num_gens = int(args[2])
     
     print(sim_to_load, num_gens)
-    auction.simulate(num_gens)
+    auction.simulate_game(num_gens)
