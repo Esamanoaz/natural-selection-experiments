@@ -10,6 +10,9 @@ def get_money():
 
 
 class Player:
+    current_artifact = None
+
+
     def __init__(self, _money=get_money()):
         self.money = _money
         self.artifacts_won = []
@@ -31,7 +34,7 @@ def play(players):
     p_one, p_two, p_three = players
 
     while len(game_artifacts) != 0:
-        current_artifact = game_artifacts.pop() # way to set variable for all class objects, even after they have been initiliazed?
+        Player.current_artifact = game_artifacts.pop() # this sets the class attribute so all Players know what they are bidding on
         # Players bid on current artifact
         for p in players:
             p.bid()
@@ -42,7 +45,7 @@ def play(players):
             bids[p.bid] = p
         # get the player object of the player with the highest bid
         auction_winner = leaderboard[[p_one.score, p_two.score, p_three.score].sort()[-1]]
-        auction_winner.add_artifact(current_artifact)
+        auction_winner.add_artifact(Player.current_artifact)
         
 
     # create a dictionary with key "player's score" to value "player object"
