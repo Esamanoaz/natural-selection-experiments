@@ -20,11 +20,10 @@ class Player:
         self.artifacts_won.append(artifact)
         self.score += artifact
 
-    def bid(self, _bid):
+    def bid_in_auction(self, _bid):
         if _bid is None:
-            self.bid = input(f'What is {self.name}\'s bid on {str(Player.current_artifact)}? ')
-        else: 
-            self.bid = _bid
+            _bid = int(input(f'What is {self.name}\'s bid on {str(Player.current_artifact)}? '))
+        self.bid = _bid
         self.bids.append(_bid)
         self.money.remove(_bid)
     
@@ -60,7 +59,7 @@ def cal_winner(things):
 def players_bid(players):
     # each player bids
     for p in players:
-        p.bid(None)
+        p.bid_in_auction(None)
     # construct dictionary {score: player object} and return it
     bids = {}
     for p in players:
@@ -79,8 +78,9 @@ def play(players):
         Recursively calls itself again if there is a tie in the bidding.
         '''
         bids = players_bid(sel_players) # players bid, then returns dictionary {score: player object}
+        print(bids)
         # get the player object of the player with the highest bid
-        auction_winner = bids[cal_winner([p_one.bid, p_two.bid, p_three.bid])]
+        auction_winner = bids[cal_winner([p_one.bid, p_two.bid, p_three.bid])] # BIG PROBLEM!!! if players bid the same thing they overwrite the same key in the dictionary. I'm going to have to find a different way to solve the issue of determining the winner.
         # if multiple players bid the highest bid
         if auction_winner is None:
             # then decide which players tied while bidding
@@ -110,7 +110,8 @@ def play(players):
         auction_winner = bidding_round(players)
         auction_winner.add_artifact(Player.current_artifact)
         # return bids to players that lost the auction
-        for p in players.remove(auction_winner):
+        losers = [p for p in players if p != auction_winner]
+        for p in losers:
             for cash in p.bids:
                 p.money.append(cash)
             p.money.sort()
