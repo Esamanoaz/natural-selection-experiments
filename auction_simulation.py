@@ -2,13 +2,8 @@ from auction_game import play, Player
 
 
 class Agent(Player):
-    pass
-    '''class FileInfo(dict):
-        """store file metadata"""
-        def __init__(self, filename=None):
-            super(FileInfo, self).__init__()
-            self["name"] = filename'''
-
+    def __init__(self):
+        super(Agent, self).__init__()
 
 
 def simulate_game(num_gens):
@@ -17,7 +12,7 @@ def simulate_game(num_gens):
         current_gen = sim_gen(current_gen)
 
 
-def sim_gen():
+def sim_gen(agents):
     # create a generation
         # agents = list of players (300 of them for 100 1v1v1 games?)
     # have them play games against each other
