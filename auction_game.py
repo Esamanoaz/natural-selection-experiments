@@ -44,27 +44,34 @@ class Player:
 def get_artifacts():
     art = [1, 2, 3, 4, 1, 2, 3, 4, 0]
     shuffle(art)
-    print(art)
     return art # 1, 2, 3, 4, 0,   ==   J, Q, K, A, Joker
 
 
-def cal_winner(things):
+def bid_match(players, match_value):
+    # key -> value concept
+    for k in players:
+        if k.bid == match_value:
+            print(k.name)
+            return k
+
+
+def score_match(players, match_value):
+    # key -> value concept
+    for k in players:
+        if k.score == match_value:
+            return k
+
+
+def score_helper(things):
+    '''
+    Returns True if there is a tie present in `things` list.
+    Returns the highest number in `things` if there is not a tie in the top two things.
+    '''
     things.sort()
     if things[-1] == things[-2]:
-        return None
+        return True
     else:
         return things[-1]
-
-
-def players_bid(players):
-    # each player bids
-    for p in players:
-        p.bid_in_auction(None)
-    # construct dictionary {score: player object} and return it
-    bids = {}
-    for p in players:
-        bids[p.bid] = p
-    return bids
 
 
 def play(players):
@@ -76,14 +83,19 @@ def play(players):
         '''
         Handles players bidding on an artifact.
         Recursively calls itself again if there is a tie in the bidding.
+        Returns the auction winner (Player object) when found.
         '''
-        bids = players_bid(sel_players) # players bid, then returns dictionary {score: player object}
-        print(bids)
-        # get the player object of the player with the highest bid
-        auction_winner = bids[cal_winner([p_one.bid, p_two.bid, p_three.bid])] # BIG PROBLEM!!! if players bid the same thing they overwrite the same key in the dictionary. I'm going to have to find a different way to solve the issue of determining the winner.
-        # if multiple players bid the highest bid
-        if auction_winner is None:
-            # then decide which players tied while bidding
+        # each player bids
+        bids = []
+        for p in sel_players:
+            p.bid_in_auction(None)
+            bids.append(p.bid)
+
+        # determine the winner
+        sh_result = score_helper(bids)
+        if type(sh_result) is int:
+            return bid_match(sel_players, sh_result)
+        elif sh_result:
             remaining_players = []
             if p_one.bid > p_two.bid:
                 remaining_players.append(p_one)
@@ -98,8 +110,6 @@ def play(players):
                 remaining_players = sel_players
             # do another round of bidding with the remaining players
             bidding_round(remaining_players)
-        else:
-            return auction_winner
 
 
     while len(game_artifacts) != 0:
@@ -120,12 +130,15 @@ def play(players):
     for p in players:
         p.leftovers()
 
-    # create a dictionary with key "player's score" to value "player object"
-    leaderboard = {}
-    for p in players:
-        leaderboard[p.score] = p
     # get the player object of the player with the highest score (doesn't account for ties currently, but are ties possible?)
-    game_winner = leaderboard[cal_winner([p_one.score, p_two.score, p_three.score])]
+    scores = []
+    for p in players:
+        scores.append(p.score)
+    sh_result = score_helper(scores)
+    if type(sh_result) is int:
+        game_winner = bid_match(players, sh_result)
+    elif sh_result:
+        pass # this could handle ties in the future
     return game_winner
 
 
