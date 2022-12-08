@@ -26,7 +26,7 @@ class Player:
         self.artifacts_won.append(artifact)
         self.score += artifact
 
-    def bid_in_auction(self, _bid):
+    def bid_in_auction(self, _bid=None):
         if _bid is None:
             print(f'{self.name} has the following money available: \n', self.money)
             _bid = int(input(f'What is {self.name}\'s bid on {str(Player.current_artifact)}? '))
@@ -99,7 +99,7 @@ def play(players):
         # each player bids
         bids = []
         for p in sel_players:
-            p.bid_in_auction(None)
+            p.bid_in_auction()
             bids.append(p.bid)
 
         # determine the winner
