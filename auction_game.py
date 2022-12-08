@@ -1,3 +1,9 @@
+# Author:   Evan Samano
+# Date:     December 8th, 2022
+# Version:  1.0
+# Desc:     A playable version of the card game Auction, for the purposes of testing and implementing strategy.
+
+
 from random import shuffle
 
 
@@ -22,10 +28,15 @@ class Player:
 
     def bid_in_auction(self, _bid):
         if _bid is None:
+            print(f'{self.name} has the following money available: \n', self.money)
             _bid = int(input(f'What is {self.name}\'s bid on {str(Player.current_artifact)}? '))
         self.bid = _bid
-        self.bids.append(_bid)
-        self.money.remove(_bid)
+        try:
+            self.bids.append(_bid)
+            self.money.remove(_bid)
+        except:
+            print('You don\'t have that money. Choose something else.')
+            self.bid_in_auction(None)
     
 
     def get_total_money(self):
@@ -42,7 +53,7 @@ class Player:
 
 
 def get_artifacts():
-    art = [1, 2, 3, 4, 1, 2, 3, 4, 0]
+    art = [1, 2, 3, 4, 1, 2, 3, 4, ] #0]
     shuffle(art)
     return art # 1, 2, 3, 4, 0,   ==   J, Q, K, A, Joker
 
@@ -51,7 +62,6 @@ def bid_match(players, match_value):
     # key -> value concept
     for k in players:
         if k.bid == match_value:
-            print(k.name)
             return k
 
 
@@ -62,7 +72,7 @@ def score_match(players, match_value):
             return k
 
 
-def score_helper(things):
+def tie_helper(things):
     '''
     Returns True if there is a tie present in `things` list.
     Returns the highest number in `things` if there is not a tie in the top two things.
@@ -92,10 +102,10 @@ def play(players):
             bids.append(p.bid)
 
         # determine the winner
-        sh_result = score_helper(bids)
-        if type(sh_result) is int:
-            return bid_match(sel_players, sh_result)
-        elif sh_result:
+        th_result = tie_helper(bids)
+        if type(th_result) is int:
+            return bid_match(sel_players, th_result)
+        elif th_result:
             remaining_players = []
             if p_one.bid > p_two.bid:
                 remaining_players.append(p_one)
@@ -109,10 +119,14 @@ def play(players):
             else:
                 remaining_players = sel_players
             # do another round of bidding with the remaining players
-            bidding_round(remaining_players)
+            return bidding_round(remaining_players)
+        else:
+            print('There was an error. \nProbably, the wrong type was returned by the tie_helper() function.')
+            print(type(th_result), th_result)
 
 
     while len(game_artifacts) != 0:
+        print('\n')
         Player.current_artifact = game_artifacts.pop() # this sets the class attribute so all Players know what they are bidding on
         # reset player bids
         for p in players:
@@ -134,10 +148,10 @@ def play(players):
     scores = []
     for p in players:
         scores.append(p.score)
-    sh_result = score_helper(scores)
-    if type(sh_result) is int:
-        game_winner = bid_match(players, sh_result)
-    elif sh_result:
+    th_result = tie_helper(scores)
+    if type(th_result) is int:
+        game_winner = bid_match(players, th_result)
+    elif th_result:
         pass # this could handle ties in the future
     return game_winner
 
@@ -145,4 +159,4 @@ def play(players):
 if __name__ == '__main__':
     players = [Player('X'), Player('Gamer'), Player('Evan')]
     the_winner_yippee = play(players)
-    print(the_winner_yippee)
+    print(f'The winner of the game is {the_winner_yippee}! \nYippee!')
