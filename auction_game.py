@@ -36,6 +36,7 @@ class Player:
             self.money.remove(_bid)
         except:
             print('You don\'t have that money. Choose something else.')
+            self.bids.remove(_bid) # make sure that incorrect bids don't get added back to player's money later.
             self.bid_in_auction(None)
     
 
@@ -53,7 +54,7 @@ class Player:
 
 
 def get_artifacts():
-    art = [1, 2, 3, 4, 1, 2, 3, 4, ] #0]
+    art = [1, 2, 3, 4, 1, 2, 3, 4, 0]
     shuffle(art)
     return art # 1, 2, 3, 4, 0,   ==   J, Q, K, A, Joker
 
@@ -132,7 +133,12 @@ def play(players):
         for p in players:
             p.bids = []
         auction_winner = bidding_round(players)
-        auction_winner.add_artifact(Player.current_artifact)
+        if Player.current_artifact != 0:
+            auction_winner.add_artifact(Player.current_artifact)
+        else: # if the current_artifact is the joker (0), then
+            Player.current_artifact = game_artifacts.pop() # get the next artifact
+            print(f'Winning player won {Player.current_artifact}')
+            auction_winner.add_artifact(Player.current_artifact)
         # return bids to players that lost the auction
         losers = [p for p in players if p != auction_winner]
         for p in losers:
@@ -145,18 +151,16 @@ def play(players):
         p.leftovers()
 
     # get the player object of the player with the highest score (doesn't account for ties currently, but are ties possible?)
+    print('\n', 'Determining the winner now...')
     scores = []
     for p in players:
+        print(p.name, p.score)
         scores.append(p.score)
     th_result = tie_helper(scores)
-    if type(th_result) is int:
-        game_winner = bid_match(players, th_result)
-    elif th_result:
-        pass # this could handle ties in the future
-    return game_winner
+    return score_match(players, th_result)
 
 
 if __name__ == '__main__':
     players = [Player('X'), Player('Gamer'), Player('Evan')]
     the_winner_yippee = play(players)
-    print(f'The winner of the game is {the_winner_yippee}! \nYippee!')
+    print(f'The winner of the game is {the_winner_yippee.name}! \nYippee!')
