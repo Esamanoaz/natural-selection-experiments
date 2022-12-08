@@ -106,7 +106,7 @@ def play(players):
         th_result = tie_helper(bids)
         if type(th_result) is int:
             return bid_match(sel_players, th_result)
-        elif th_result:
+        elif type(th_result) is bool:
             remaining_players = []
             if p_one.bid > p_two.bid:
                 remaining_players.append(p_one)
@@ -122,8 +122,7 @@ def play(players):
             # do another round of bidding with the remaining players
             return bidding_round(remaining_players)
         else:
-            print('There was an error. \nProbably, the wrong type was returned by the tie_helper() function.')
-            print(type(th_result), th_result)
+            raise TypeError('The wrong type was returned by the tie_helper() function.')
 
 
     while len(game_artifacts) != 0:
